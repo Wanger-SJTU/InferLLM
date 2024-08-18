@@ -133,6 +133,28 @@ private:
     Graph* m_graph;
 };
 
+class PredictorModule : public OprModuleBase {
+public:
+    PredictorModule(
+            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            UserConfig model_config, Device* device, const std::string& name);
+
+private:
+    uint32_t m_embd;
+    Graph* m_graph;
+};
+
+class SparseFFNModule : public OprModuleBase {
+public:
+    SparseFFNModule(
+            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            UserConfig model_config, Device* device, const std::string& name);
+
+private:
+    uint32_t m_embd;
+    Graph* m_graph;
+};
+
 class GlmFFNModule : public OprModuleBase {
 public:
     GlmFFNModule(

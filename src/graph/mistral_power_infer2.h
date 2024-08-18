@@ -4,7 +4,7 @@
 
 namespace inferllm {
 
-class LlamaLikeGraph : public Graph {
+class MistralGraph : public Graph {
     using Graph::Graph;
 
 public:

@@ -71,7 +71,7 @@ static inline float compute_fp16_to_fp32(fp16_t h) {
 #endif
 
 static const float ftype_size[] = {
-        4, 2, .5, .5, 1, 1,
+    4, 2, .5, .5, 1, 1,
 };
 
 struct Header {

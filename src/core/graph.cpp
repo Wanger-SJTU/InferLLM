@@ -78,6 +78,35 @@ LlamaFFNModule::LlamaFFNModule(
     set_output(matmul_out2);
 }
 
+PredictorModule::PredictorModule(
+            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            UserConfig model_config, Device* device, const std::string& name) 
+            : OprModuleBase(input, device, name), m_embd(embd), m_graph(graph) 
+{
+    size_t nff = ((2 * (4 * embd) / 3 + mult - 1) / mult) * mult;
+    //! matmul0
+    auto matmul_out0 = add_opr<MatMul>(
+            device, name + ".pre.w1", OpIOs{input}, std::vector<size_t>{nff, embd})[0];
+    //! matmul1
+    auto matmul_out1 = add_opr<MatMul>(
+            device, name + ".pre.w1", OpIOs{matmul_out0}, std::vector<size_t>{nff, embd})[0];
+    //! silu activation
+    auto relu_out = add_opr<Elemwise>(
+            device, name + ".relu", OpIOs{matmul_out1}, ElemMode::Sigmoid)[0];
+    
+    auto out = add_opr<Elemwise>(
+            device, name + ".round", OpIOs{relu_out}, ElemMode::Round)[0];
+    set_output(out);
+}
+
+SparseFFNModule::SparseFFNModule(
+            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            UserConfig model_config, Device* device, const std::string& name) 
+            : OprModuleBase(input, device, name), m_embd(embd), m_graph(graph)
+{
+
+}
+
 GlmFFNModule::GlmFFNModule(
         Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
         UserConfig model_config, Device* device, const std::string& name)

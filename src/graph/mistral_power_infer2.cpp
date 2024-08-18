@@ -1,9 +1,9 @@
-#include "llama_like.h"
+#include "mistral_power_infer2.h"
 #include "chatGLM.h"
 
 using namespace inferllm;
 
-void LlamaPowerInferGraph::set_weights_alias() {
+void MistralGraph::set_weights_alias() {
     m_weights_name_aliases.clear();
     // clang-format off
     m_weights_name_aliases = {
@@ -23,7 +23,7 @@ void LlamaPowerInferGraph::set_weights_alias() {
     // clang-format on
 }
 
-void LlamaPowerInferGraph::load_param(
+void MistralGraph::load_param(
         std::shared_ptr<InputFile> fin, LlmParams& param,
         std::shared_ptr<Vocab> vocab) {
     Header header;
@@ -51,7 +51,7 @@ void LlamaPowerInferGraph::load_param(
     fin->seek(header.tensor_offset);
 }
 
-void LlamaPowerInferGraph::construct_llm() {
+void MistralGraph::construct_llm() {
     uint32_t embd = m_param.n_embd;
     uint32_t ffn_size = m_param.n_mult;
     uint32_t head = m_param.n_head;

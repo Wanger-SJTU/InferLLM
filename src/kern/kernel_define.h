@@ -52,6 +52,9 @@ enum class ElemMode {
     Mul,
     Silu,
     Gelu,
+    Relu,
+    Sigmoid,
+    Round
 };
 
 enum class RotMode {
