@@ -83,13 +83,12 @@ PredictorModule::PredictorModule(
             UserConfig model_config, Device* device, const std::string& name) 
             : OprModuleBase(input, device, name), m_embd(embd), m_graph(graph) 
 {
-    size_t nff = ((2 * (4 * embd) / 3 + mult - 1) / mult) * mult;
     //! matmul0
     auto matmul_out0 = add_opr<MatMul>(
-            device, name + ".pre.w1", OpIOs{input}, std::vector<size_t>{nff, embd})[0];
+            device, name + ".pre.w1", OpIOs{input}, std::vector<size_t>{embd})[0];
     //! matmul1
     auto matmul_out1 = add_opr<MatMul>(
-            device, name + ".pre.w1", OpIOs{matmul_out0}, std::vector<size_t>{nff, embd})[0];
+            device, name + ".pre.w2", OpIOs{matmul_out0}, std::vector<size_t>{embd})[0];
     //! silu activation
     auto relu_out = add_opr<Elemwise>(
             device, name + ".relu", OpIOs{matmul_out1}, ElemMode::Sigmoid)[0];
@@ -104,7 +103,23 @@ SparseFFNModule::SparseFFNModule(
             UserConfig model_config, Device* device, const std::string& name) 
             : OprModuleBase(input, device, name), m_embd(embd), m_graph(graph)
 {
+    auto matmul_out0 = add_opr<MatMul>(
+            device, name + ".up", OpIOs{input}, std::vector<size_t>{embd})[0];
+    //! matmul1
+    auto matmul_out1 = add_opr<MatMul>(
+            device, name + ".down", OpIOs{matmul_out0}, std::vector<size_t>{embd})[0];
+    //! silu activation
+    auto relu_out = add_opr<Elemwise>(
+            device, name + ".gate", OpIOs{matmul_out1}, ElemMode::Sigmoid)[0];
+    
+    auto out = add_opr<Elemwise>(
+            device, name + ".round", OpIOs{relu_out}, ElemMode::Round)[0];
+    set_output(out);
+}
 
+void SparseFFNModule::execute(WorkSpace* workspace, uint32_t nr_past, bool is_prefill = false) 
+{
+   
 }
 
 GlmFFNModule::GlmFFNModule(
@@ -207,6 +222,7 @@ void Graph::execute(
             m_workspace->set_memory(data, len);
         }
     }
+
     m_input->resume_user_count();
     m_input->prepare_data();
     m_device->host2device_copy(
