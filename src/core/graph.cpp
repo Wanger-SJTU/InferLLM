@@ -96,11 +96,11 @@ PredictorModule::PredictorModule(
             device, name + ".round", OpIOs{relu_out}, ElemMode::Round)[0];
     set_output(out);
 }
-void PredictorModule::execute(
-            WorkSpace* workspace, uint32_t nr_past, bool is_prefill)
-{
+// void PredictorModule::execute(
+//             WorkSpace* workspace, uint32_t nr_past, bool is_prefill)
+// {
     
-}
+// }
 
 SparseFFNModule::SparseFFNModule(
             Graph* graph, std::shared_ptr<Tensor> input, std::shared_ptr<Tensor> predictor_out, uint32_t embd, uint32_t mult,
