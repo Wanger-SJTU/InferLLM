@@ -100,7 +100,7 @@ void MistralGraph::construct_llm() {
                 this, ffn_norm_out, embd, 1024, ffn_size, model_config(), device(), name);
         //! feed forward
         auto ffn_output = add_module<SparseFFNModule>(
-                this, ffn_norm_out, embd, ffn_size, model_config(), device(), name);
+                this, ffn_norm_out, predictor_output, embd, ffn_size, model_config(), device(), name);
         //! add
         input = add_one_opr_module<Elemwise>(
                         this, OpIOs{feed_forward_input, ffn_output}, device(),

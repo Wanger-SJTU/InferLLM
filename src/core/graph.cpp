@@ -103,7 +103,7 @@ void PredictorModule::execute(
 }
 
 SparseFFNModule::SparseFFNModule(
-            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            Graph* graph, std::shared_ptr<Tensor> input, std::shared_ptr<Tensor> predictor_out, uint32_t embd, uint32_t mult,
             UserConfig model_config, Device* device, const std::string& name) 
             : OprModuleBase(input, device, name), m_embd(embd), m_graph(graph)
 {
