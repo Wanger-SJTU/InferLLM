@@ -136,9 +136,10 @@ private:
 class PredictorModule : public OprModuleBase {
 public:
     PredictorModule(
-            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t mult,
+            Graph* graph, std::shared_ptr<Tensor> input, uint32_t embd, uint32_t rank, uint32_t ffn_size,
             UserConfig model_config, Device* device, const std::string& name);
-
+    void execute(
+            WorkSpace* workspace, uint32_t nr_past, bool is_prefill = false) override;
 private:
     uint32_t m_embd;
     Graph* m_graph;

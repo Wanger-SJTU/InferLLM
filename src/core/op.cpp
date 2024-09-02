@@ -813,3 +813,44 @@ void DiagMask::execute(WorkSpace*, uint32_t n_past) {
         //! fp16
     }
 }
+
+
+void VectorFFN::execute(WorkSpace* workspace, uint32_t) {
+    auto N = weights()[0]->shape()[0];
+    auto K = inputs()[0]->shape()[1];
+    auto M = inputs()[0]->shape()[0];
+    auto src_dtype = inputs()[0]->dtype();
+    auto weight_dtype = weights()[0]->dtype();
+    void* p_workspace = workspace->ptr();
+    uint32_t p_workspace_size = workspace->length();
+    auto kernel = get_kernel();
+    if (src_dtype == DType::Float32) {
+        float* dst = outputs()[0]->ptr<float>();
+        const float* bias = nullptr;
+        
+        const float* src = inputs()[0]->ptr<float>();
+        switch (weight_dtype) {
+            case DType::Int4:
+                kernel->operator()<KernelID::MatmulInt4Float>(
+                        dst, weights()[0]->ptr(), bias, src, M, N, K, p_workspace,
+                        p_workspace_size);
+                break;
+            case DType::Int8:
+                kernel->operator()<KernelID::MatmulInt8Float>(
+                        dst, weights()[0]->ptr(), bias, src, M, N, K, p_workspace,
+                        p_workspace_size);
+                break;
+            case DType::Float32:
+                kernel->operator()<KernelID::MatmulFloatFloat>(
+                        dst, weights()[0]->ptr<float>(), bias, src, M, N, K,
+                        p_workspace, p_workspace_size);
+                break;
+            default:
+                INFER_ASSERT(0, "not support");
+        }
+    }
+}
+size_t VectorFFN::get_workspace_in_byte()
+{
+    return 0;
+}

@@ -545,4 +545,14 @@ private:
     uint32_t m_vocab;
 };
 
+
+class VectorFFN : public OpBase {
+
+public:
+    void execute(WorkSpace* workspace, uint32_t nr_past) override;
+    size_t get_workspace_in_byte() override;
+
+private:
+    bool m_bias = false;
+};
 }  // namespace inferllm
